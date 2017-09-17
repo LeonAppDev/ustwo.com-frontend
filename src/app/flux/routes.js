@@ -51,7 +51,7 @@ const routes = {
     data: () => [{
       url: 'ustwo/v1/pages/work',
       type: 'page',
-      slug: 'lways-of-working'
+      slug: 'ways-of-working'
     }]
   },
   caseStudy: {
@@ -88,15 +88,6 @@ const routes = {
       url: 'ustwo/v1/posts?per_page=12',
       type: 'posts',
       slug: 'posts/all'
-    }]
-  },
-  searchResults: {
-    id: 'blog/search-results',
-    patterns: ['/blog/search?q=:query'],
-    data: query => [{
-      url: `ustwo/v1/posts?search=${query}`,
-      type: 'posts',
-      slug: 'posts/search'
     }]
   },
   post: {
@@ -187,7 +178,16 @@ const routes = {
     pattern: '/404',
     statusCode: 404,
     data: () => []
-  }
+  },
+  tully: {
+    id: 'tully',
+    patterns: ['/tully'],
+    data: () => [{
+      url: 'ustwo/v1/pages/tully',
+      type: 'page',
+      slug: 'tully'
+    }]
+  },
 };
 
 export default routes;

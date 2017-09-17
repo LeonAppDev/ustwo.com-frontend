@@ -5,21 +5,31 @@
  */
 
 html {
- .menu-no-js {
-   display: block;
+  .menu-no-js {
+    display: block;
 
-   li {
-     display: inline-block;
-     margin: 0 10px;
+    li {
+      display: inline-block;
+      margin: 0 10px;
 
-     a {
+      a {
+        display: block;
+      }
+    }
+  }
+
+  .navigation:before {
+    display: none;
+  }
+
+  &.js {
+    .menu-no-js {
+      display: none;
+    }
+    .navigation:before {
       display: block;
-     }
-   }
- }
- &.js .menu-no-js {
-   display: none;
- }
+    }
+  }
 }
 
 $nav-height-small: 22px;
@@ -28,21 +38,16 @@ $nav-height-large: 32px;
 
 .navigation {
   position: fixed;
-  pointer-events: auto;
-  opacity: 1;
   top: 0;
-  padding: 20px 0;
   right: 0;
-  left: 0;
+  left: auto;
   z-index: 4000;
+  pointer-events: auto;
+  width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  transition: all .2s ease-in-out;
-
-  &.subPage {
-    // transition: none; /* to avoid seeing the switch back to left: auto when fading out */
-  }
+  padding: 20px 0;
 
   &:before {
     content: "";
@@ -52,15 +57,16 @@ $nav-height-large: 32px;
     bottom: 0;
     right: 0;
     width: 100%;
-    background-color: $offWhite-semiTransparent;
-    transition: all .2s linear;
+    background-color: transparent;
+    transition: background-color .2s linear;
   }
 
   .navigation-subpage-nav {
     position: relative;
     z-index: 9999;
-    opacity: 0;
-    visibility: hidden;
+    left: 0;
+    position: absolute;
+    transition-delay: .32s;
 
     button {
       text-transform: uppercase;
@@ -71,12 +77,16 @@ $nav-height-large: 32px;
       background-repeat: no-repeat;
       background-size: 20px auto;
       cursor: pointer;
+      transition: all .2s linear;
     }
   }
 
   @media screen and (min-width: $bp-medium) {
-    left: auto;
     padding: 29px 0;
+
+    &:before {
+      content: none;
+    }
   }
 
   @media screen and (min-width: $bp-large) {
@@ -89,7 +99,7 @@ $nav-height-large: 32px;
   }
 }
 
-.navigation-button {
+.navigation-buttons {
   display: flex;
   z-index: 1;
 
@@ -107,13 +117,13 @@ $nav-height-large: 32px;
 }
 
 .navigation-logo {
+  display: flex;
   overflow: visible;
   cursor: pointer;
   height: 40px;
 
   svg {
     pointer-events: none;
-    fill: $nonBlack;
     width: 112px;
     transition: fill .2s linear;
     height: $nav-height-small;
@@ -150,7 +160,7 @@ $nav-height-large: 32px;
   z-index: 1;
   pointer-events: none; /* Fixes intermittent issue on touch devices? */
   border-radius: 50%;
-  border: 2px solid $nonBlack;
+  border: 2px solid;
   width: $nav-height-small;
   height: $nav-height-small;
   box-sizing: content-box;
@@ -165,7 +175,6 @@ $nav-height-large: 32px;
     transform: translate(-50%, -50%);
     width: 10px;
     height: 2px;
-    background-color: $nonBlack;
     transition: all .2s linear;
   }
 
@@ -187,7 +196,7 @@ $nav-height-large: 32px;
   }
 
   @media screen and (min-width: $bp-large) {
-    border: 3px solid $nonBlack;
+    border: 3px solid $offWhite;
     width: $nav-height-large;
     height: $nav-height-large;
 
@@ -254,9 +263,32 @@ $nav-height-large: 32px;
 }
 
 .navigation {
+
+  @media screen and (max-width: $bp-medium) {
+    &.notOverHero:before,
+    &.invert:before {
+      background-color: $offWhite-semiTransparent;
+    }
+  }
+
   &.invert,
+  &.notOverHero {
+    .navigation-logo svg {
+      fill: $nonBlack;
+    }
+    .navigation-toggle-main {
+      border-color: $nonBlack;
+
+      &:before,
+      &:after {
+        background-color: $nonBlack;
+      }
+    }
+  }
+
+  &,
   &.menuOpen,
-  &.overHero:not(.home) {
+  &.default {
     .navigation-logo svg {
       fill: $offWhite;
     }
@@ -268,23 +300,43 @@ $nav-height-large: 32px;
         background-color: $offWhite;
       }
     }
+  }
 
-    @media screen and (min-width: $bp-medium) {
-      &:before {
-        background-color: transparent;
+  @media screen and (min-width: $bp-medium) {
+    &.testimonialsActive {
+      .navigation-logo svg {
+        fill: $offWhite;
+      }
+      .navigation-toggle-main {
+        border-color: $offWhite;
+
+        &:before,
+        &:after {
+          background-color: $offWhite;
+        }
       }
     }
   }
-  &.invert {
+
+  &.default {
     &:before {
-      background: linear-gradient(90deg, #333, #323952);
-      opacity: 0.95;
+      // background: linear-gradient(90deg, #333, #323952);
+      background-color: #333437;
+      opacity: .95;
     }
   }
-  &.menuOpen,
-  &.overHero:not(.home) {
+  &.menuOpen {
     &:before {
       background: transparent !important;
+    }
+  }
+  &.discovery-strategy,
+  &.design-build,
+  &.launch-scale,
+  &.ways-of-wroking {
+    &:before {
+      background-color: $c-solid;
+      opacity: .95;
     }
   }
 }
@@ -292,8 +344,7 @@ $nav-height-large: 32px;
 @media screen and (min-width: $bp-medium) {
   .navigation {
     &,
-    &.invert,
-    &.overHero:not(.home) {
+    &.default {
       &:before {
         background: none;
       }
@@ -322,6 +373,11 @@ $nav-height-large: 32px;
     .navigation-toggle-ring {
       opacity: 0;
     }
+    .navigation-subpage-nav {
+      opacity: 0;
+      transition: none;
+      pointer-events: none;
+    }
   }
 
   &.subPage.pageControls:not(.menuOpen) {
@@ -330,19 +386,13 @@ $nav-height-large: 32px;
 
     &.scrolled {
       &:before {
-        background-color: $offWhite;
-        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+        background-color: $offWhite-semiTransparent;
+        // box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
       }
     }
 
-    .navigation-subpage-nav {
-      opacity: 1;
-      visibility: visible;
-      transition: opacity .2s linear, visibility 0s linear;
-    }
-
     // Sure the following could be DRYier with the rest of the code
-    &.ustwo-auto {
+    &.ustwo-auto.subPage:not(.notOverHero) {
       .navigation-logo svg {
         fill: $offWhite;
       }
@@ -362,69 +412,18 @@ $nav-height-large: 32px;
         background-color: transparent;
         box-shadow: none;
       }
-
-      &.scrolled {
-        .navigation-logo svg {
-          fill: $nonBlack;
-        }
-        .navigation-toggle-main {
-          border-color: $nonBlack;
-
-          &:before,
-          &:after {
-            background-color: $nonBlack;
-          }
-        }
-        .navigation-subpage-nav button {
-          color: $nonBlack;
-          background-image: url('/images/icon-left-dark.svg');
-        }
-        &:before {
-          background-color: $offWhite;
-          box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
-        }
-      }
     }
     // END
 
-    &,
-    &.overHero {
-      .navigation-logo svg {
-        fill: $nonBlack;
-      }
-      .navigation-toggle-main {
-        border-color: $nonBlack;
-
-        &:before,
-        &:after {
-          background-color: $nonBlack;
-        }
-      }
-    }
-
-    &.invert {
+    &.default {
 
       &:before {
-        background: $c-solid;
+        background-color: $c-solid;
       }
 
-      &,
-      &.overHero {
-        .navigation-logo svg {
-          fill: $offWhite;
-        }
-        .navigation-toggle-main {
-          border-color: $offWhite;
-
-          &:before,
-          &:after {
-            background-color: $offWhite;
-          }
-        }
-        .navigation-subpage-nav button {
-          color: $offWhite;
-          background-image: url('/images/icon-left-light.svg');
-        }
+      .navigation-subpage-nav button {
+        color: $offWhite;
+        background-image: url('/images/icon-left-light.svg');
       }
     }
   }
@@ -447,50 +446,3 @@ $nav-height-large: 32px;
     }
   }
 }
-
-
-
-
-/* TEMP */
-/* Invert colours on some pages that have lighter backgrounds */
-// .navigation.takeover,
-// .navigation.case-study,
-// .navigation.search,
-// .app-404 .navigation {
-//   .navigation {
-//     color: $nonBlack;
-//
-//     .logo svg,
-//     .navigation-toggle {
-//       fill: $nonBlack;
-//     }
-//   }
-// }
-// .navigation {
-//
-//     &.post,
-//     &.event {
-//       position: relative;
-//       color: $nonBlack;
-//       background-color: #fff;
-//
-//       .logo svg,
-//       .navigation-toggle {
-//         fill: $nonBlack;
-//       }
-//     }
-// }
-
-/* If js is supported, navigation animates in when class 'show' is added */
-// .js .nav-wrapper {
-//   .navigation {
-//     transform: translateY(-68px);
-//   }
-//
-//   &.show {
-//     .navigation {
-//       transition: transform 0.5s ease-out, background-color .2s ease-in-out;
-//       transform: translateY(0px);
-//     }
-//   }
-// }

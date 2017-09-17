@@ -17,7 +17,6 @@ import ContactBlock from 'app/components/contact-block';
 import Footer from 'app/components/footer';
 
 class PageHome extends Component {
-
   constructor(props) {
     super(props);
 
@@ -25,6 +24,8 @@ class PageHome extends Component {
       venturesPosition: {},
       fixedHeightVentures: 0
     }
+
+    this.getVenturesPositionBound = this.getVenturesPosition.bind(this);
   }
 
   // We need to find out viewportDimensions and if ventures is active (therefore know where it is)
@@ -41,7 +42,7 @@ class PageHome extends Component {
     const body = document.body;
     const scrollTop = window.pageYOffset || body.scrollTop;
     const clientTop = body.clientTop || 0;
-    const top  = box.top +  scrollTop - clientTop;
+    const top = box.top + scrollTop - clientTop;
     const venturesPositionFromTop = Math.round(top);
 
     const venturesPosition = {
@@ -59,18 +60,16 @@ class PageHome extends Component {
     this.getVenturesPosition();
 
     // Make sure that if the viewport is resized we update accordingly othewise scrolls/mousePositions will be out of sync
-    window.addEventListener('resize', this.getVenturesPosition.bind(this), false);
+    window.addEventListener('resize', this.getVenturesPositionBound);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.getVenturesPosition.bind(this), false);
+    window.removeEventListener('resize', this.getVenturesPositionBound);
   }
 
   render() {
-    const { page, documentScrollPosition, viewportDimensions, scrolling, popup, isMobile, loaded, homeIntroVideoViewed, footer, studios, currentPage, fixedHeight } = this.props;
+    const { page, documentScrollPosition, viewportDimensions, scrolling, popup, isMobile, loaded, footer, studios, currentPage, fixedHeight } = this.props;
     const { venturesPosition, fixedHeightVentures } = this.state;
-
-    // const venturesActive = (documentScrollPosition - viewportDimensions.height > venturesPosition.from) && (documentScrollPosition - viewportDimensions.height < venturesPosition.to)
 
     const venturesActive = documentScrollPosition > venturesPosition.from - (viewportDimensions.height * .5) && documentScrollPosition < venturesPosition.to - (viewportDimensions.height * .5);
 
@@ -189,91 +188,91 @@ const dataProducts = [{
   category: "Client Work",
   imageURL: "/images/home/ford-gopark.jpg",
   description: "A smart parking service tackling congestion in one of London’s busiest boroughs",
-  linkURI: "/work/ford-gopark"
+  slug: "/work/ford-gopark"
 },{
   title: "Android wear",
   category: "Client Work",
   imageURL: "/images/home/android-wear.jpg",
   videoURL: "/images/home/android-wear.mp4",
   description: "An evolving creative partnership setting the standard for watch face design",
-  linkURI: "/work/android-wear-digital-watch-faces"
+  slug: "/work/android-wear-digital-watch-faces"
 },{
   title: "Foursquare",
   category: "Client Work",
   imageURL: "/images/home/foursquare.jpg",
   videoURL: "/images/home/foursquare.mp4",
   description: "A fresh business customer portal experience designed to showcase the enterprise offering",
-  linkURI: "/work/foursquare-enterprise"
+  slug: "/work/foursquare-enterprise"
 },{
   title: "Adidas Go",
   category: "Client Work",
   imageURL: "/images/home/adidas-go.jpg",
   description: "A music app designed to track, enhance and improve your running performance",
-  linkURI: "/work/adidas-go"
+  slug: "/work/adidas-go"
 },{
   title: "Google Cardboard ",
   category: "Client Work",
   imageURL: "/images/home/google-cardboard.jpg",
   description: "An accessible go-to how-to guide for VR design principles",
-  linkURI: "/work/google-cardboard"
+  slug: "/work/google-cardboard"
 },{
   title: "Harvey Nichols",
   category: "Client Work",
   imageURL: "/images/home/harvey-nichols.jpg",
   videoURL: "/images/home/harvey-nichols.mp4",
   description: "A unique consumer-centred loyalty experience built to engage and reward",
-  linkURI: "/work/harvey-nichols"
+  slug: "/work/harvey-nichols"
 },{
   title: "Sky Kids",
   category: "Client Work",
   imageURL: "/images/home/sky-kids.jpg",
   videoURL: "/images/home/sky-kids.mp4",
   description: "Creating a new product, brand and audience - loved by kids and trusted by parents",
-  linkURI: "/work/sky-kids"
+  slug: "/work/sky-kids"
 },{
   title: "NBC Sprout",
   category: "Client Work",
   imageURL: "/images/home/nbc-sprout.jpg",
   description: "A fun, colourful and exploratory game for Terrific Trucks",
-  linkURI: "/work/nbc-sprout-playground-terrific-trucks"
+  slug: "/work/nbc-sprout-playground-terrific-trucks"
 }];
 
 const dataVentures = [{
   title: "ustwo Games",
   category: "Business",
-  imageURL: "/images/home/ustwo-games.jpg",
-  videoURL: "/images/home/monument-valley.mp4",
+  imageURL: "/images/home/ustwo-games-2.jpg",
+  videoURL: "/images/home/ustwo-games.mp4",
   description: "An award-winning mobile games studio making the most beautiful interactive entertainment",
-  linkURI: "/work/monument-valley"
+  slug: "/work/monument-valley-2"
 },{
   title: "Dice",
   category: "Business",
   imageURL: "/images/home/dice.jpg",
   description: "Search, browse and buy tickets with the fastest growing live music discovery app",
-  linkURI: "/work/dice"
+  slug: "/work/dice"
 },{
   title: "Moodnotes",
   category: "Venture",
   imageURL: "/images/home/moodnotes.jpg",
   videoURL: "/images/home/moodnotes.mp4",
   description: "Scientifically grounded in CBT making it simple to manage emotional wellbeing over time",
-  linkURI: "/work/moodnotes"
+  slug: "/work/moodnotes"
 },{
   title: "Wayfindr",
   category: "Venture",
   imageURL: "/images/home/wayfindr.jpg",
   description: "Empowering vision impaired people to navigate the world independently",
-  linkURI: "/work/wayfindr-2"
+  slug: "/work/wayfindr-2"
 },{
   title: "Sway",
   category: "Venture",
   imageURL: "/images/home/sway.jpg",
   description: "A scientifically validated interactive meditation app designed for mindfulness on the move",
-  linkURI: "/work/sway"
+  slug: "/work/sway"
 },{
   title: "Watch This",
   category: "ustwo Product",
   imageURL: "/images/home/watch-this.jpg",
   description: "Easily share media-rich TV and movie recommendations without leaving iMessage",
-  linkURI: "/work/watch-this-for-imessage"
+  slug: "/work/watch-this-for-imessage"
 }];

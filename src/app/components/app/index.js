@@ -20,12 +20,9 @@ import 'app/lib/animate';
 
 import Store from 'app/flux/store';
 import Nulls from 'app/flux/nulls';
-import PageContainer from 'app/components/page-container';
 import Navigation from 'app/components/navigation';
 import Modal from 'app/components/modal';
 import EntranceTransition from 'app/components/entrance-transition';
-import ContactTray from 'app/components/contact-tray';
-import TakeOver from 'app/components/take-over';
 import FourOhFour from 'app/components/404';
 import BlogCategories from 'app/components/blog-categories';
 import NavigationOverlay from 'app/components/navigation-overlay';
@@ -44,15 +41,12 @@ const pageMap = {
   'work/ways-of-working': require('app/components/work-ways-of-working'),
   'blog': require('app/components/blog'),
   'blog/post': require('app/components/post'),
-  'blog/search-results': require('app/components/search-results'),
   'legal': require('app/components/legal'),
   'join-us': require('app/components/join-us'),
   'events': require('app/components/events'),
   'events/event': require('app/components/event'),
   'ev': require('app/components/page')
 };
-
-const spinnerBlacklist = ['legal', 'blog/search-results'];
 
 const App = React.createClass({
 
@@ -62,7 +56,7 @@ const App = React.createClass({
       isScrolling: false,
       show: false,
       viewportDimensions: {},
-      isMobile: window.innerWidth < 600,
+      isMobile: window.innerWidth < 600
     }, this.props.state);
   },
 
@@ -72,9 +66,8 @@ const App = React.createClass({
       documentScrollPosition: document.scrollingElement.scrollTop
     });
 
-    let timeout = null;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
+    clearTimeout(this.timeout);
+    this.timeout = setTimeout(() => {
       this.setState({ isScrolling: false });
     }, 1200);
   },
@@ -91,29 +84,18 @@ const App = React.createClass({
     });
   },
 
-  componentWillMount() {
-    this.getViewportDimensions();
-  },
-
   componentDidMount() {
     const { page, currentPage, post, caseStudy, isScrolling, modal, popup, overflow } = this.state;
 
     this.setState({ show: true });
     this.getViewportDimensions();
 
-    /* Get dimensions of viewport to calculte mousePosition and scrollPosition (for example) */
-    window.addEventListener('scroll', this.getDocumentScrollPosition.bind(this), false);
+    /* Get dimensions of viewport to calculate mousePosition and scrollPosition (for example) */
+    window.addEventListener('scroll', this.getDocumentScrollPosition);
     /* Get new dimensions when device orientationchange etc */
-    window.addEventListener('resize', this.getViewportDimensions.bind(this), false);
+    window.addEventListener('resize', this.getViewportDimensions);
 
     Store.on('change', this.onChangeStore);
-
-    /* TODO: What do we need this for?  */
-    // window.addEventListener("orientationchange", function() {
-    //   if (navigator.userAgent.match(/(iPhone|iPod|iPad)/i)) {
-    //     document.documentElement.innerHTML = document.documentElement.innerHTML;
-    //   }
-    // }, false);
   },
 
   componentDidUpdate(prevProps, prevState) {
@@ -126,54 +108,31 @@ const App = React.createClass({
         disableScroll.off();
       }
     }
-
-    // if (prevState.currentPage != this.state.currentPage && env.Modernizr.touchevents) {
-      // this.setFixedHeight.bind(this);
-    // }
   },
-
-  // componentDidUpdate(prevProps, prevState) {
-  //   if (this.state.isScrolling) {
-  //     setTimeout(() => {
-  //       this.setState({ isScrolling: false })
-  //     }, 50)
-  //   }
-  // },
 
   componentWillUnmount() {
     Store.removeListener('change', this.onChangeStore);
-    window.removeEventListener('scroll', this.getDocumentScrollPosition.bind(this), false);
-    window.removeEventListener('resize', this.getViewportDimensions.bind(this), false);
+    window.removeEventListener('scroll', this.getDocumentScrollPosition);
+    window.removeEventListener('resize', this.getViewportDimensions);
   },
 
   onChangeStore(state) {
     this.setState(state);
   },
 
-  showTakeover() {
-    const { currentPage, takeover } = this.state;
-    return currentPage === 'home' && takeover && !takeover.seen;
-  },
-
   renderModal() {
-    const { takeover, modal } = this.state;
+    const { modal, navMain, currentPage, footer, videoOverlaySrc } = this.state;
     let modalContent, className, content;
-    if (this.showTakeover()) {
-      modalContent = <TakeOver key="takeover" takeover={takeover} />;
-    } else if (modal) {
+    if (modal) {
       switch(modal) {
         case 'menu':
           className = 'menu';
           content = (
             <NavigationOverlay
-              pages={this.state.navMain}
-              section={this.state.currentPage.split('/')[0]}
+              pages={navMain}
+              section={currentPage.split('/')[0]}
             />
           );
-          break;
-        case 'contacts':
-          className = 'tray';
-          content = <ContactTray contacts={state.footer.contacts} />;
           break;
         case 'blogCategories':
           className = 'modal-blog-categories';
@@ -183,7 +142,7 @@ const App = React.createClass({
           className = 'modal-video-overlay';
           content = (
             <VideoOverlay
-              src={this.state.videoOverlaySrc}
+              src={videoOverlaySrc}
             />
           );
           break;
@@ -229,9 +188,10 @@ const App = React.createClass({
 
   render() {
     const state = this.state;
-    const { currentPage, show, popup, showPopup, showRollover, menuHover, modal, viewportDimensions,
-      homeIntroVideoViewed, homeLoaderShown, page, post, caseStudy, navMain, visitedWorkCapabilities,
-      documentScrollPosition, venturesPosition, footer, studios, heroVideoReady, overflow, isMobile, loaded, setWindowHeight } = this.state;
+    const { currentPage, show, popup, showPopup, showRollover, menuHover, modal,
+      viewportDimensions, page, post, caseStudy, navMain, documentScrollPosition,
+      venturesPosition, footer, studios, overflow, isMobile,
+      setWindowHeight, testimonialsPosition } = this.state;
 
     const appClasses = classnames('app', `page-${currentPage}`, {
       'show': show,
@@ -239,10 +199,9 @@ const App = React.createClass({
       'overflow-hidden': popup
     });
     const contentClasses = classnames('app-content', showPopup, showRollover, menuHover, {
-      'show': state.show,
-      'takeover': this.showTakeover(),
+      'show': show,
       'disabled': !!modal,
-      'mobile-no-scroll': modal || this.showTakeover(),
+      'mobile-no-scroll': modal,
     });
 
     let styles;
@@ -252,37 +211,23 @@ const App = React.createClass({
       }
     }
 
-    // else if (modal === null || popup === null || overflow === 'auto') {
-    //   // document.body.style.overflow = "auto";
-    //   noScroll.off();
-    // }
-    // if (isMobile) {
-    //   if (overflow === 'hidden') {
-    //     document.body.style.position = "fixed";
-    //   } else if (overflow === 'auto') {
-    //     document.body.style.position = "initial";
-    //   }
-    // }
-
     const navigation = (
       <Navigation
         pages={navMain}
         section={currentPage.split('/')[0]}
         page={currentPage.split('/')[1]}
-        takeover={this.showTakeover()}
         documentScrollPosition={documentScrollPosition}
         venturesPosition={venturesPosition}
+        testimonialsPosition={testimonialsPosition}
         modal={modal}
         viewportDimensions={viewportDimensions}
-        loaded={loaded}
+        loaded={show}
         caseStudy={caseStudy}
       />
     );
 
-    const dataLoading = !includes(spinnerBlacklist, currentPage) && !page && !post && !caseStudy;
-
     let content;
-    if (state.currentPage === 'notfound') {
+    if (currentPage === 'notfound') {
       content = (
         <div className={appClasses}>
           {navigation}
@@ -318,26 +263,15 @@ const App = React.createClass({
           <EntranceTransition className="nav-wrapper">
             {navigation}
           </EntranceTransition>
-          <TransitionManager
-            component="div"
-            className="transition-page"
-            duration={1000}
-          >
-            <PageContainer key={currentPage} extraClasses={contentClasses}>
-              <PageContent
-                pageMap={pageMap}
-                pageState={this.state}
-                currentPage={currentPage}
-                dataLoading={dataLoading}
-                homeIntroVideoViewed={homeIntroVideoViewed}
-                homeLoaderShown={homeLoaderShown}
-                heroVideoReady={heroVideoReady}
-                viewportDimensions={viewportDimensions}
-                visitedWorkCapabilities={visitedWorkCapabilities}
-                documentScrollPosition={documentScrollPosition}
-              />
-            </PageContainer>
-          </TransitionManager>
+          <PageContent
+            key={currentPage}
+            extraClasses={contentClasses}
+            pageMap={pageMap}
+            pageState={this.state}
+            currentPage={currentPage}
+            viewportDimensions={viewportDimensions}
+            documentScrollPosition={documentScrollPosition}
+          />
           {this.renderModal()}
           {this.renderPopup()}
         </div>

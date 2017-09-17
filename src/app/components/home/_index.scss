@@ -64,7 +64,7 @@
   left: auto;
   bottom: auto;
   right: auto;
-  margin: 0px;
+  margin: 0;
   display: block;
   position: relative;
   box-sizing: content-box;
@@ -86,6 +86,12 @@
   box-sizing: border-box;
   height: 100%;
   width: 100%;
+
+  // Remove position fixed for everything 1024 and below to improve
+  // scroll performance on touch screen devices
+  @media screen and (max-width: $bp-large) {
+    position: absolute;
+  }
 }
 
 /* Transitions around venturesActive */
@@ -107,19 +113,6 @@
 
   .scroll-wrapper-home-smorgasbord-message {
     opacity: 1;
-
-    // Major hack/fix here because the word Collaboration is too long on iphone 6 widths
-    // h1 {
-    //   @media screen and (min-width: $bp-smaller) {
-    //     font-size: 34px; // this has been reduced
-    //   }
-    //   @media screen and (min-width: $bp-medium) {
-    //     font-size: 60px; // this is here because CSS
-    //   }
-    //   @media screen and (min-width: $bp-larger) {
-    //     font-size: 70px; // this is here because CSS
-    //   }
-    // }
   }
 
   .scroll-wrapper-home-carousel-products,
@@ -156,47 +149,11 @@
     .scroll-wrapper-home-smorgasbord-message,
     .scroll-wrapper-home-carousel-products {
       opacity: 0;
+      pointer-events: none;
     }
     .scroll-wrapper-home-more-message,
     .scroll-wrapper-home-carousel-ventures {
       opacity: 1;
-    }
-  }
-}
-
-// .page-home {
-//   .app-content {
-//     .home-loader {
-//       > * {
-//         opacity: 0;
-//         transition: opacity .2s linear;
-//       }
-//     }
-//
-//     &.show {
-//       .home-loader {
-//         transition: opacity .5s linear;
-//
-//         > * {
-//           opacity: 1;
-//         }
-//         h1 {
-//           transition-delay: .75s;
-//         }
-//       }
-//     }
-//   }
-//
-// }
-.page-home-content {
-  .home-loader {
-    opacity: 1;
-    transition: opacity .2s linear;
-  }
-
-  &.loaded {
-    .home-loader {
-      opacity: 0;
     }
   }
 }

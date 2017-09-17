@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import transitionOnScroll from 'app/lib/transition-on-scroll';
 import env from 'app/adaptors/server/env';
 import window from 'app/adaptors/server/window';
 
@@ -7,19 +6,13 @@ import SVG from 'app/components/svg';
 import Video from 'app/components/video';
 import DownIndicator from 'app/components/down-indicator';
 
-// const rainbowColours = ['#ED0082', '#E60C29', '#FF5519', '#FFBF02', '#96CC29', '#14C04D', '#16D6D9', '#009CF3', '#143FCC', '#6114CC', '#111111'];
-
 function renderLogoBackground(screenPosition) {
   const { coordinateX, coordinateY } = screenPosition;
   const modifier = env.Modernizr.touchevents ? 20 : 10;
-  let x = env.Modernizr.touchevents ? coordinateX : coordinateX * -1;
-  let y = env.Modernizr.touchevents ? coordinateY : coordinateY * -1;
-  x = x || 0;
-  y = y || 0;
-  const value = 10 + Math.abs(coordinateX * 10);
+  const x = (env.Modernizr.touchevents ? coordinateX : coordinateX * -1) || 0;
+  const y = (env.Modernizr.touchevents ? coordinateY : coordinateY * -1) || 0;
   const transform = `translate3d(${x * modifier}px, ${y * modifier}px, 0)`;
-  const styles = { transform, fill: '#000000' }
-  // const translateZ = `-${value}px`;
+  const styles = { transform, fill: '#000000' };
 
   return (
     <SVG
@@ -33,59 +26,44 @@ function renderLogoBackground(screenPosition) {
 }
 
 class HomeIntro extends Component {
-
   render() {
-    const { scrollProgress, screenPosition, loaded, isMobile, popup, viewportDimensions, currentPage, studios, footer, fixedHeight } = this.props;
+    const { scrollProgress, screenPosition, isMobile, fixedHeight } = this.props;
 
-    const scrollProgressValue = scrollProgress ? scrollProgress : 0;
-
-    let playVideo = loaded;
-    if (scrollProgressValue > 0.5 && env.Modernizr.touchevents || !!popup) {
-      playVideo = false;
-    }
-
-    const hide = scrollProgressValue === 1;
-
-    let fallbackImage, src;
+    let src, srcHls, imageCSS;
     if (window.innerWidth < 600) {
-      src = 'https://player.vimeo.com/external/205373063.sd.mp4?s=eedf82905ed3ecba67b0f7ce3d2200309156ee36&profile_id=165';
-      // TODO: remove this and the file
-      // src = '/images/home/home-mobile.mp4';
-      fallbackImage = '/images/home-header-fallback-mobile.jpg';
+      src = 'https://player.vimeo.com/external/205373063.sd.mp4?s=eedf82905ed3ecba67b0f7ce3d2200309156ee36&profile_id=164';
+      srcHls = 'https://player.vimeo.com/external/205373063.m3u8?s=0e6d93219da73e1718daf8837cc53ace9993f0dd';
+      imageCSS = 'https://i.vimeocdn.com/video/626259622.jpg?mw=700&mh=1239';
     } else {
       src = 'https://player.vimeo.com/external/195475311.sd.mp4?s=fea332405de6ad2bea1d9082ea6b98184269111e&profile_id=165';
-      // src = '/images/home/home.mp4';
-      fallbackImage = '/images/home-header-fallback.jpg';
+      srcHls = 'https://player.vimeo.com/external/195475311.m3u8?s=9e47d80c47468a648848ede7ad04f873afd5a03e';
+      imageCSS = 'https://i.vimeocdn.com/video/626251677.jpg?mw=1280&mh=720';
     }
 
-    const transform = `translateY(${((0.5 - scrollProgressValue) * 4) * 30}px)`;
-    const transitionStyles = {
-      opacity: (0.75 - scrollProgressValue) * 4,
-      transform: transform
-    };
-
-    const videoTransitionStyles = {
-      transform: transform
-    }
-
-    let styles;
-    if (env.Modernizr.touchevents) {
-      styles = { height: `${fixedHeight}px` }
+    let scrollProgressValue, transform, transitionStyles, videoTransitionStyles;
+    if (window.innerWidth > 1024) {
+      scrollProgressValue = scrollProgress ? scrollProgress : 0;
+      transform = `translateY(${Math.min(((0.5 - scrollProgressValue) * 4) * 30, 0)}px)`;
+      transitionStyles = {
+        opacity: (0.75 - scrollProgressValue) * 4,
+        transform: transform
+      };
+      videoTransitionStyles = {
+        transform: transform
+      }
     }
 
     return (
-      <div className="home-intro" style={styles}>
+      <div className="home-intro">
         <div className="home-intro-video" style={videoTransitionStyles}>
           <Video
             src={src}
-            isVideoBackground={true}
-            play={playVideo}
-            imageCSS={fallbackImage}
+            srcHls={srcHls}
+            imageCSS={imageCSS}
             heroVideo={true}
             isMobile={isMobile}
             preload="auto"
             fixedHeight={fixedHeight}
-            hide={hide}
           />
         </div>
         <div className="home-intro-logo" style={transitionStyles}>
@@ -98,7 +76,10 @@ class HomeIntro extends Component {
             />
           </div>
         </div>
-        <div className="hero-down-indicator" style={transitionStyles}><DownIndicator /></div>
+        <h1 style={transitionStyles}>Digital Products, <br />services &amp; businesses</h1>
+        <div className="hero-down-indicator" style={transitionStyles}>
+          <DownIndicator />
+        </div>
       </div>
     );
   }

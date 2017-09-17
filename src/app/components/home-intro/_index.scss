@@ -13,10 +13,6 @@
   }
 }
 
-.home-welcome-wrapper {
-  // margin-top: 100%;
-}
-
 .home-intro-link {
   display: block;
   height: 100%;
@@ -36,6 +32,39 @@
     justify-content: center;
     left: calc(50% - 13px);
   }
+
+  h1 {
+    position: absolute;
+    left: 0;
+    z-index: 1;
+    width: 100%;
+    top: calc(50% + 35px);
+    font-family: "PxGrotesk-Regular", "Arial", sans-serif;
+    font-size: 14px;
+    color: rgba(255,255,255,.8);
+    letter-spacing: 0.9px;
+    text-align: center;
+    line-height: 1.3;
+
+    @media screen and (min-width: $bp-small) {
+      br {
+        display: none;
+      }
+    }
+
+    @media screen and (min-width: $bp-medium) {
+      top: calc(50% + 45px);
+    }
+
+    @media screen and (min-width: $bp-large) {
+      top: calc(50% + 52px);
+    }
+
+    @media screen and (min-width: $bp-larger) {
+      top: calc(50% + 60px);
+    }
+  }
+
 }
 
 .home-intro-video {
@@ -101,12 +130,30 @@
   }
 }
 
+.home-hero-call-to-action-link {
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  z-index: 1;
+  transform: translateX(-50%);
+  max-width: 800px;
+  width: 80%;
+  text-align: center;
+
+  a {
+    @include buttonStyle(true);
+    @include buttonColor('invert');
+    background-image: url('/images/icon-right-light.svg');
+    display: inline-block;
+    line-height: 1.5;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-transform: none;
+  }
+}
 
 /* NOTE: max-width */
 @media screen and (max-width: $bp-medium) {
-  .home-loader {
-    height: 100% !important;
-  }
   .home-intro-link {
     width: 100vw;
     height: 100%;

@@ -36,15 +36,12 @@ const NavigationOverlay = React.createClass({
   onClick(url) {
     return (e) => {
       e.preventDefault();
-      this.onClick && this.onClick();
       Track('send', {
         'hitType': 'event',          // Required.
         'eventCategory': 'nav',   // Required.
         'eventAction': 'click_nav_link',     // Required.
       });
-      window.scrollTop;
       Flux.navigate(url);
-      Flux.visitedWorkCapabilities(false);
       Flux.closeModal();
     }
   },
@@ -83,7 +80,7 @@ const NavigationOverlay = React.createClass({
         hovered: slug === this.state.hoveredItem
       })
       return (
-        <div className={classes}></div>
+        <div className={classes} key={link.id}></div>
       );
     });
   },

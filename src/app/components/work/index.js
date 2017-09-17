@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import classnames from 'classnames';
+import Scroll, { Link, Element } from 'react-scroll'; // Animate and scroll to location in document
 import { get } from 'lodash';
 import getFeaturedImage from 'app/lib/get-featured-image';
 import env from 'app/adaptors/server/env';
 import Flux from 'app/flux';
 import window from 'app/adaptors/server/window';
+import kebabCase from 'lodash/string/kebabCase';
 
-import WorkItem from 'app/components/work-item';
 import TestimonialCarousel from 'app/components/testimonial-carousel';
 import Video from 'app/components/video';
 import Footer from 'app/components/footer';
@@ -18,9 +19,9 @@ import WorkVerticals from 'app/components/work-verticals';
 import ContactButton from 'app/components/contact-button';
 import WorkClientsBoard from 'app/components/work-clients-board';
 import WorkCaseStudies from 'app/components/work-case-studies';
+import FeaturedCaseStudy from 'app/components/featured-case-study';
 
 class PageWork extends Component {
-
   constructor(props) {
     super(props);
 
@@ -30,20 +31,10 @@ class PageWork extends Component {
     }
   }
 
-  // componentDidMount() {
-  //   const box = this.workAnchor.getBoundingClientRect();
-  //   const body = document.body;
-  //   const scrollTop = window.pageYOffset || body.scrollTop;
-  //   const clientTop = body.clientTop || 0;
-  //   const top  = box.top +  scrollTop - clientTop;
-  //   const workAnchorPosition = Math.round(top);
-  //
-  //   this.setState({ workAnchorPosition });
-  // }
-
   renderWhatWeDo() {
     const { isMobile } = this.props;
-    const workIntroExtra = workData.intro.extra.map(item => <p className="work-intro-extra">{item}</p>);
+
+    const workIntroExtra = workData.intro.extra.map(item => <p className="work-intro-extra" key={item}>{item}</p>);
 
     return (
       <div className="work-whatwedo-wrapper">
@@ -62,36 +53,19 @@ class PageWork extends Component {
   }
 
   renderTestimonialCarousel() {
-    const { page, fixedHeight } = this.props;
+    const { page, fixedHeight, documentScrollPosition, viewportDimensions } = this.props;
     const testimonials = get(page, '_embedded.ustwo:testimonials', []);
 
     if(testimonials.length > 0) {
       return (
-        <TestimonialCarousel testimonials={testimonials} fixedHeight={fixedHeight} />
+        <TestimonialCarousel
+          testimonials={testimonials}
+          fixedHeight={fixedHeight}
+          documentScrollPosition={documentScrollPosition}
+          viewportDimensions={viewportDimensions}
+        />
       );
     }
-  }
-
-  renderFeaturedCaseStudy() {
-    const styles = {
-      backgroundImage: `linear-gradient(305deg, ${featuredCaseStudy.colours[0]}, ${featuredCaseStudy.colours[1]})`
-    }
-
-    return (
-      <div className="work-featured-case-study" style={styles}>
-        <div className="work-featured-case-study-inner">
-          <div className="work-featured-case-study-image">
-            <img src={featuredCaseStudy.image} alt={featuredCaseStudy.imageAlt} />
-          </div>
-          <div className="work-featured-case-study-content">
-            <div className="section-title">Featured Work</div>
-            <h2 className="title">{featuredCaseStudy.title}</h2>
-            <p>{featuredCaseStudy.excerpt}</p>
-            <button onClick={Flux.override(featuredCaseStudy.linkURI)}>View Case Study</button>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   addMoreCaseStudies() {
@@ -100,57 +74,76 @@ class PageWork extends Component {
     })
   }
 
+  renderWorkItemFilter() {
+    const { caseStudyFilter } = this.state;
+    const filterItems = ['All', 'Client Work', 'Venture', 'Business', 'Own Product'];
+
+    const renderFilterItems = filterItems.map(item => {
+      const classes = classnames({ selected: caseStudyFilter === kebabCase(item) });
+      return (
+        <button
+          className={classes}
+          onClick={() => this.setState({ caseStudyFilter: kebabCase(item), numberOfCaseStudiesShowing: 12 })}>
+          {item}
+        </button>
+      );
+    });
+
+    return (
+      <div className="work-item-filter">
+        {renderFilterItems}
+      </div>
+    );
+  }
+
   render() {
     const { page, className, loaded, isMobile, footer, studios, currentPage, fixedHeight, documentScrollPosition, viewportDimensions, popup, modal } = this.props;
     const { isLoadingMorePosts, numberOfCaseStudiesShowing, caseStudyFilter } = this.state;
     const caseStudies = get(page, '_embedded.ustwo:case_studies', []);
     const image = getFeaturedImage(page);
     const classes = classnames('page-work', className);
-    const buttonClassAll = classnames({ selected: this.state.caseStudyFilter === 'all' });
-    const buttonClassClients = classnames({ selected: this.state.caseStudyFilter === 'Client Work' });
-    const buttonClassVentures = classnames({ selected: this.state.caseStudyFilter === 'Venture' });
-
-    let styles;
-    if (documentScrollPosition > window.innerHeight + 100) {
-      styles = { position: `relative` }
-    }
 
     return (
       <article className={classes}>
 
         <div className="home-pinned-header-wrapper">
-          <div className="home-pinned-header-inner" style={styles}>
-            <ScrollWrapper
-              component={<WorkHero loaded={loaded} modal={modal} isMobile={isMobile} fixedHeight={fixedHeight} />}
-              documentScrollPosition={documentScrollPosition}
-              viewportDimensions={viewportDimensions}
-              requireScreenPosition={true}
-              className="scroll-wrapper-work-hero"
-            />
+          <div className="home-pinned-header-inner">
+            <Link to="workMainBlock" smooth={true} duration={1000} className="home-intro-link">
+              <ScrollWrapper
+                component={<WorkHero loaded={loaded} modal={modal} isMobile={isMobile} fixedHeight={fixedHeight} />}
+                documentScrollPosition={documentScrollPosition}
+                viewportDimensions={viewportDimensions}
+                requireScreenPosition={true}
+                className="scroll-wrapper-work-hero"
+              />
+            </Link>
           </div>
         </div>
 
         <div className="home-main-content-wrapper">
-
-          {this.renderWhatWeDo()}
+          <Element name="workMainBlock">
+            {this.renderWhatWeDo()}
+          </Element>
 
           {this.renderTestimonialCarousel()}
 
-          {this.renderFeaturedCaseStudy()}
+          <FeaturedCaseStudy content={featuredCaseStudy} />
 
           <div className="page-work-controls" ref={(ref) => this.workAnchor = ref}>
-            <div className="page-work-filter">
-              <button className={buttonClassAll} onClick={() => this.setState({ caseStudyFilter: 'all', numberOfCaseStudiesShowing: 12 })}>All</button>
-              <button className={buttonClassClients} onClick={() => this.setState({ caseStudyFilter: 'Client Work', numberOfCaseStudiesShowing: 12 })}>Client Work</button>
-              <button className={buttonClassVentures} onClick={() => this.setState({ caseStudyFilter: 'Venture', numberOfCaseStudiesShowing: 12 })}>Ventures</button>
-            </div>
+            {this.renderWorkItemFilter()}
           </div>
 
-          <WorkCaseStudies caseStudies={caseStudies} page={page} numberOfCaseStudiesShowing={numberOfCaseStudiesShowing} caseStudyFilter={caseStudyFilter} addMoreCaseStudies={this.addMoreCaseStudies.bind(this)} />
+          <WorkCaseStudies
+            caseStudies={caseStudies}
+            page={page}
+            numberOfCaseStudiesShowing={numberOfCaseStudiesShowing}
+            caseStudyFilter={caseStudyFilter}
+            addMoreCaseStudies={this.addMoreCaseStudies.bind(this)}
+          />
 
           <WorkVerticals data={workData.verticals} />
 
-          <WorkClientsBoard />
+          <WorkClientsBoard logos={workData.clients} title="ustwo work with" />
 
           <ScrollWrapper
             component={<ContactBlock />}
@@ -199,20 +192,20 @@ const workData = {
     image: '/images/illustration-ways-of-working.svg',
     text: 'Make products that really mean something to your customers. Our teams bake transformative ways of working into your business along the way.'
   }],
-  verticals: {
-    auto: {
-      type: 'Expertise',
-      title: 'Auto',
-      text: 'The ustwo Auto team explore user experience in the automotive space with client engagements and our own research and experimental projects, building services and products around the connected car.',
-      linkURI: '/work/ustwoauto'
-    },
-    health: {
-      type: 'Expertise',
-      title: 'Health',
-      text: 'ustwo collaborates with clients, healthcare professionals and academic experts to create lasting, meaningful digital health solutions.',
-      linkURI: '/work/ustwo-health'
-    }
-  }
+  verticals: [{
+    type: 'Expertise',
+    shortTitle: 'auto',
+    title: 'Auto',
+    text: 'The ustwo Auto team explore user experience in the automotive space with client engagements and our own research and experimental projects, building services and products around the connected car.',
+    slug: '/work/ustwoauto'
+  },{
+    type: 'Expertise',
+    shortTitle: 'health',
+    title: 'Health',
+    text: 'ustwo collaborates with clients, healthcare professionals and academic experts to create lasting, meaningful digital health solutions.',
+    slug: '/work/ustwo-health'
+  }],
+  clients: ['Adidas', 'Android', 'BMW Group', 'Co-op', 'Ford', 'Foursquare', 'Google', 'Ikea', 'NBC', 'Qantas', 'Sky', 'Sony']
 }
 
 const featuredCaseStudy = {
@@ -221,5 +214,5 @@ const featuredCaseStudy = {
   colours: ['#87e283', '#92e9b2'],
   image: '/images/work/featured-gopark.png',
   imageAlt: 'iPhone showing Ford GoPark App',
-  linkURI: '/work/ford-gopark'
+  slug: '/work/ford-gopark'
 }

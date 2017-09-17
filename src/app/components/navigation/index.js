@@ -11,19 +11,22 @@ import SVGSequence from 'app/components/svg-sequence';
 import kebabCase from 'lodash/string/kebabCase';
 
 class Navigation extends Component {
-
   constructor(props) {
     super(props);
 
     this.state = {
-      height: 0,
-      paused: true
+      active: false,
+      navHeight: 0,
+      paused: true,
+      capabilityPages: ['discovery-strategy', 'design-build', 'launch-scale', 'ways-of-working'],
+      heroPages: ['home', 'work', 'blog', 'events', 'join-us', 'ustwo-auto']
     }
   }
 
   componentDidMount() {
     this.setState({
-      height: this.navigation.getBoundingClientRect().height
+      active: true,
+      navHeight: this.navigation.getBoundingClientRect().height
     });
   }
 
@@ -58,11 +61,6 @@ class Navigation extends Component {
     }
   }
 
-  onClickLogo(event) {
-    event.preventDefault();
-    Flux.navigate('/');
-  }
-
   subPageBack(event) {
     event.preventDefault();
 
@@ -76,7 +74,7 @@ class Navigation extends Component {
       case 'design-build':
       case 'launch-scale':
       case 'ways-of-working':
-        Flux.visitedWorkCapabilities(false);
+      case 'ustwo-auto':
         navigateTo = '/work';
         break;
       case 'event':
@@ -89,6 +87,24 @@ class Navigation extends Component {
     Flux.navigate(navigateTo);
   }
 
+  renderBackButton() {
+    const { page } = this.props;
+    const { capabilityPages, workPages } = this.state;
+    const workSubPage = capabilityPages.includes(page) || page === 'case-study' || page === 'ustwo-auto';
+    const otherSubPage = page === 'post' || page === 'event';
+    const subPageText = capabilityPages.includes(page) || page === 'case-study' ? 'Work' : 'Back';
+
+    if (workSubPage || otherSubPage) {
+      return (
+        <div className="navigation-subpage-nav">
+          <button onClick={this.subPageBack.bind(this)}>{workSubPage ? 'Work' : 'Back'}</button>
+        </div>
+      );
+    }
+    return;
+  }
+
+
   mouseEnter() {
     this.setState({ paused: false });
   }
@@ -97,28 +113,36 @@ class Navigation extends Component {
     this.setState({ paused: true });
   }
 
-  render() {
-    const { section, page, takeover, customClass, documentScrollPosition, venturesPosition, popup, modal, viewportDimensions, caseStudy } = this.props;
+  onClickLogo(event) {
+    event.preventDefault();
+    Flux.navigate('/');
+  }
 
-    const capability = ['discovery-strategy', 'design-build', 'launch-scale', 'ways-of-working'];
+  render() {
+    const { section, page, customClass, documentScrollPosition, venturesPosition, testimonialsPosition, popup, modal, viewportDimensions, caseStudy } = this.props;
+    const { active, paused, navHeight, capabilityPages, heroPages } = this.state;
+
     const venturesActive = venturesPosition && documentScrollPosition > venturesPosition.from - (viewportDimensions.height * .5) && documentScrollPosition < venturesPosition.to - (viewportDimensions.height * .5);
+    const testimonialsActive = testimonialsPosition && documentScrollPosition > testimonialsPosition.from - (navHeight * 0.5) && documentScrollPosition < testimonialsPosition.to - (navHeight * 0.5);
     const homePage = section === 'home';
-    const heroPage = section === 'work' || section === 'join-us' || section === 'events' || section === 'blog' || caseStudy;
-    const subPage = page === 'post' || page === 'case-study' || page === 'event' || capability.includes(page);
+    const heroPage = heroPages.includes(section) || caseStudy;
+    const subPage = page === 'post' || page === 'event' || capabilityPages.includes(page) || page === 'case-study' || page === 'ustwo-auto';
     const blogEvent = (section === 'blog' || section === 'events') && !subPage;
     const scrolled = documentScrollPosition > 0;
-    const scrolledBefore100 = documentScrollPosition < viewportDimensions.height - (this.state.height * 0.5);
+    const scrolledAfter100 = documentScrollPosition > viewportDimensions.height - (navHeight * 0.5);
     const caseStudyName = caseStudy ? kebabCase(caseStudy.name) : null
 
     const navClasses = classnames('navigation', customClass, section, page, caseStudyName, {
-      takeover: takeover,
-      notSticky: modal === null && scrolledBefore100 && homePage,
-      menuOpen: modal === 'menu',
-      invert: venturesActive && homePage || capability.includes(page),
-      overHero: scrolledBefore100 && heroPage && !subPage,
+      notSticky: modal === null && !scrolledAfter100 && homePage,
       pageControls: subPage,
       scrolled: scrolled,
-      subPage: subPage
+      subPage: subPage,
+      notOverHero: scrolledAfter100 && heroPage && !subPage || scrolledAfter100 && heroPage && page === 'ustwo-auto',
+      default: capabilityPages.includes(page) || venturesActive && homePage && scrolledAfter100 && !modal,
+      testimonialsActive: testimonialsActive,
+      invert: subPage || section === 'legal',
+      menuOpen: modal,
+      active: active && section === 'home'
     });
 
     let color;
@@ -147,8 +171,6 @@ class Navigation extends Component {
       color = ['#f8e467', '#ffbf00'];
     }
 
-    const subPageText = capability.includes(page) || page === 'case-study' ? 'Work' : 'Back';
-
     return (
       <nav className={navClasses} ref={(ref) => this.navigation = ref}>
         <div className="menu-no-js">
@@ -160,23 +182,24 @@ class Navigation extends Component {
             <li><a href="/join-us">Join us</a></li>
           </ul>
         </div>
-        <div className="navigation-subpage-nav">
-          <button onClick={this.subPageBack.bind(this)}>{subPageText}</button>
-        </div>
-        <button
-          className="navigation-button"
-          onClick={this.toggleMenu.bind(this)}
-          onMouseOver={this.mouseEnter.bind(this)}
-          onMouseOut={this.mouseLeave.bind(this)}
-        >
-          <div className="navigation-logo">
+        {this.renderBackButton()}
+        <div className="navigation-buttons">
+          <button
+            className="navigation-logo"
+            onClick={this.onClickLogo.bind(this)}
+          >
             <SVG title="ustwo logo" spritemapID="ustwologo" />
-          </div>
-          <div className="navigation-toggle">
+          </button>
+          <button
+            className="navigation-toggle"
+            onClick={this.toggleMenu.bind(this)}
+            onMouseOver={this.mouseEnter.bind(this)}
+            onMouseOut={this.mouseLeave.bind(this)}
+          >
             <div className="navigation-toggle-main"></div>
-            <SVGSequence fps={25} paused={this.state.paused} name="icon-ring" color={color} />
-          </div>
-        </button>
+            <SVGSequence fps={25} paused={paused} name="icon-ring" color={color} />
+          </button>
+        </div>
       </nav>
     );
   }

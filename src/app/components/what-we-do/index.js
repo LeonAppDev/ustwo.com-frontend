@@ -32,7 +32,6 @@ const PageWhatWeDo = React.createClass({
         <Video
           src={get(page, 'featured_video')}
           sizes={get(image, 'media_details.sizes')}
-          isVideoBackground={true}
         />
       </Hero>
       {renderModules({
@@ -59,12 +58,12 @@ const PageWhatWeDo = React.createClass({
       const attachments = get(page, '_embedded.wp:attachment');
       const image = getFeaturedImage(caseStudy, attachments);
       const featured = caseStudies.indexOf(caseStudy) === 0;
-      return <WorkItem
-        key={caseStudy.slug}
-        data={caseStudy}
-        image={image}
-        featured={featured}
-      />;
+      return (
+        <WorkItem
+          data={caseStudy}
+          featured={featured}
+        />
+      );
     });
   }
 });

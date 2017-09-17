@@ -1,17 +1,21 @@
 import React from 'react';
-import { get } from 'lodash';
-import getFeaturedImage from 'app/lib/get-featured-image';
 import WorkItem from 'app/components/work-item';
 import LoadMoreButton from 'app/components/load-more-button';
+import kebabCase from 'lodash/string/kebabCase';
+import classnames from 'classnames';
 
 function WorkCaseStudies({ page, caseStudies, caseStudyFilter, numberOfCaseStudiesShowing, addMoreCaseStudies }) {
+
+  if (caseStudyFilter === 'venture') {
+    caseStudyFilter = 'ustwo-venture';
+  }
 
   let filteredCaseStudies;
   if (caseStudyFilter === 'all') {
     filteredCaseStudies = caseStudies;
   } else {
     filteredCaseStudies = caseStudies.filter(caseStudy => {
-      return caseStudy.categories[0].name === caseStudyFilter
+      return caseStudy.categories[0].slug === caseStudyFilter
     });
   }
 
@@ -19,25 +23,19 @@ function WorkCaseStudies({ page, caseStudies, caseStudyFilter, numberOfCaseStudi
 
   const renderCaseStudies = filteredCaseStudies.map((caseStudy, i) => {
     if (i < numberOfCaseStudiesShowing) {
-      const attachments = get(page, '_embedded.wp:attachment');
-      const image = getFeaturedImage(caseStudy, attachments);
-      // const featured = caseStudies.indexOf(caseStudy) === 0;
-      let featured;
-
       return (
-        <WorkItem
-          key={caseStudy.slug}
-          data={caseStudy}
-          image={image}
-          featured={featured}
-        />
+        <WorkItem data={caseStudy} page={page} key={`case-study-${kebabCase(caseStudy.name)}`} />
       );
     }
   });
 
+  const classes = classnames('card-list-inner', {
+    lessThanThree: filteredCaseStudies.length < 3
+  });
+
   return (
     <div className="card-list work-items-list work-case-studies">
-      <div className="card-list-inner">
+      <div className={classes}>
         {renderCaseStudies}
       </div>
       <LoadMoreButton

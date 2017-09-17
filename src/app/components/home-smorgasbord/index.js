@@ -2,9 +2,13 @@ import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
 import Flux from 'app/flux';
 import window from 'app/adaptors/server/window';
-import { DefaultPlayer as Video } from 'react-html5video';
+import { DefaultPlayer as Html5Video } from 'react-html5video';
 
 import Subscription from 'app/components/subscription';
+
+function isThereAnyDataHere(data) {
+  return !Array.isArray(data); // If it's an array then it means it's empty!
+}
 
 class HomeSmorgasbord extends Component {
 
@@ -24,7 +28,6 @@ class HomeSmorgasbord extends Component {
 
   render() {
     const { data, loaded } = this.props;
-    const { event, post } = data;
 
     let src;
     if (window.innerWidth < 600) {
@@ -47,16 +50,16 @@ class HomeSmorgasbord extends Component {
       videoPoster = '/images/ustwo-roadshow-first-frame.jpg';
     }
 
-    if (event.slug) {
-      const eventUri = `/events/${event.slug}`;
+    if (data && isThereAnyDataHere(data.event)) {
+      const eventUri = `/events/${data.event.slug}`;
 
       renderEvent = (
         <div className="smorgasbord-block smorgasbord-events" style={eventBlockStyle}>
           <h4>ustwo Events</h4>
           <div className="smorgasbord-post">
-            <div className="smorgasbord-subtitle">{event.studio.name}</div>
+            <div className="smorgasbord-subtitle">{data.event.studio.name}</div>
             <h3 className="smorgasbord-title">
-              <a href={eventUri} onClick={Flux.override(eventUri)}>{event.name}</a>
+              <a href={eventUri} onClick={Flux.override(eventUri)}>{data.event.name}</a>
             </h3>
           </div>
           <button onClick={Flux.override('/events')}>More Events</button>
@@ -64,16 +67,16 @@ class HomeSmorgasbord extends Component {
       );
     }
 
-    if (post.slug) {
-      const postUri = `/blog/${post.slug}`;
+    if (data && isThereAnyDataHere(data.post)) {
+      const postUri = `/blog/${data.post.slug}`;
 
       renderPost = (
         <div className="smorgasbord-block smorgasbord-blog" style={blogBlockStyle}>
           <h4>Blog</h4>
           <div className="smorgasbord-post">
-            <div className="smorgasbord-subtitle">{post.categories[0].name}</div>
+            <div className="smorgasbord-subtitle">{data.post.categories[0].name}</div>
             <h3 className="smorgasbord-title">
-              <a href={postUri} onClick={Flux.override(postUri)}>{post.name}</a>
+              <a href={postUri} onClick={Flux.override(postUri)}>{data.post.name}</a>
             </h3>
           </div>
           <button onClick={Flux.override('/blog')}>More Blog</button>
@@ -89,7 +92,7 @@ class HomeSmorgasbord extends Component {
       <div className="home-smorgasbord">
         <div className={classes}>
           <h2>What we do</h2>
-          <Video
+          <Html5Video
             controls={['Time', 'Seek', 'Volume', 'Fullscreen']}
             preload="none"
             poster={videoPoster}
@@ -105,7 +108,7 @@ class HomeSmorgasbord extends Component {
             }}
           >
             <source src={src} type="video/mp4" />
-          </Video>
+          </Html5Video>
         </div>
         <div className="smorgasbord-block-wrapper">
 
@@ -120,37 +123,5 @@ class HomeSmorgasbord extends Component {
     );
   }
 }
-
-HomeSmorgasbord.propTypes = {
-  data: PropTypes.shape({
-    event: {
-      name: PropTypes.string,
-      uri: PropTypes.string,
-      studio: {
-        name: PropTypes.string
-      }
-    },
-    post: {
-      name: PropTypes.string,
-      uri: PropTypes.string,
-    }
-  })
-};
-
-HomeSmorgasbord.defaultProps = {
-  data: {
-    event: {
-      name: '',
-      uri: '',
-      studio: {
-        name: ''
-      }
-    },
-    post: {
-      name: '',
-      uri: '',
-    }
-  }
-};
 
 export default HomeSmorgasbord;
