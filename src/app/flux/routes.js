@@ -9,6 +9,15 @@ const routes = {
       async: ['related_content']
     }]
   },
+  aboutUs: {
+    id: 'about-us',
+    patterns: ['/about-us'],
+    data: () => [{
+      url: 'ustwo/v1/pages/about-us',
+      type: 'page',
+      slug: 'about-us'
+    }]
+  },
   work: {
     id: 'work',
     patterns: ['/work'],
@@ -19,39 +28,57 @@ const routes = {
     }]
   },
   discoveryStrategy: {
-    id: 'work/discovery-strategy',
-    patterns: ['/work/discovery-strategy'],
+    id: 'about-us/discovery-strategy',
+    patterns: ['/about-us/discovery-strategy'],
     data: () => [{
-      url: 'ustwo/v1/pages/work',
+      url: 'ustwo/v1/pages/about-us',
       type: 'page',
       slug: 'discovery-strategy'
     }]
   },
   designBuild: {
-    id: 'work/design-build',
-    patterns: ['/work/design-build'],
+    id: 'about-us/design-build',
+    patterns: ['/about-us/design-build'],
     data: () => [{
-      url: 'ustwo/v1/pages/work',
+      url: 'ustwo/v1/pages/about-us',
       type: 'page',
       slug: 'design-build'
     }]
   },
   launchScale: {
-    id: 'work/launch-scale',
-    patterns: ['/work/launch-scale'],
+    id: 'about-us/launch-scale',
+    patterns: ['/about-us/launch-scale'],
     data: () => [{
-      url: 'ustwo/v1/pages/work',
+      url: 'ustwo/v1/pages/about-us',
       type: 'page',
       slug: 'launch-scale'
     }]
   },
-  waysOfWorking: {
-    id: 'work/ways-of-working',
-    patterns: ['/work/ways-of-working'],
+  changeTransform: {
+    id: 'about-us/change-transform',
+    patterns: ['/about-us/change-transform'],
     data: () => [{
-      url: 'ustwo/v1/pages/work',
+      url: 'ustwo/v1/pages/about-us',
       type: 'page',
-      slug: 'ways-of-working'
+      slug: 'change-transform'
+    }]
+  },
+  auto: {
+    id: 'auto',
+    patterns: ['/auto'],
+    data: () => [{
+      url: 'ustwo/v1/pages/auto',
+      type: 'page',
+      slug: 'auto'
+    }]
+  },
+  humanisingAutonomy: {
+    id: 'auto/humanisingautonomy',
+    patterns: ['/auto/humanisingautonomy'],
+    data: () => [{
+      url: 'ustwo/v1/pages/humanisingautonomy',
+      type: 'page',
+      slug: 'humanisingautonomy'
     }]
   },
   caseStudy: {
@@ -179,13 +206,13 @@ const routes = {
     statusCode: 404,
     data: () => []
   },
-  tully: {
-    id: 'tully',
-    patterns: ['/tully'],
+  contactUs: {
+    id: 'contact-us',
+    patterns: ['/contact-us'],
     data: () => [{
-      url: 'ustwo/v1/pages/tully',
+      url: 'ustwo/v1/pages/contact-us',
       type: 'page',
-      slug: 'tully'
+      slug: 'contact-us'
     }]
   },
 };

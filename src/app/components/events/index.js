@@ -199,12 +199,10 @@ const PageEvents = React.createClass({
           subheading={get(page, 'hero.attr.subheading.value')}
           notFullScreen={true}
         ></Hero>
-        <section className="events-list">
-          <section className='card-list'>
-            <div className="card-list-inner">
-              {this.renderEvents()}
-            </div>
-          </section>
+        <section className="card-list events-list">
+          <div className="card-list-inner">
+            {this.renderEvents()}
+          </div>
           <LoadMoreButton
             loading={isLoadingMoreEvents}
             onClick={this.onClickLoadMoreEvents}
@@ -218,7 +216,7 @@ const PageEvents = React.createClass({
           disabled={archivedEventsPagination >= archivedEventsPaginationTotal}
         />
         <ScrollWrapper
-          component={<ContactBlock />}
+          component={<ContactBlock page="events" />}
           documentScrollPosition={documentScrollPosition}
           viewportDimensions={viewportDimensions}
           requireScreenPosition={true}

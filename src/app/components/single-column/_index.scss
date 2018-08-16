@@ -12,17 +12,31 @@
 
 .single-column .wrapper,
 .hljs { // This is the code block used inside posts
-  max-width: 790px;
+  max-width: $thin-content-width;
   margin: 0 auto;
 }
 
 .single-column {
-  padding: $vertical-spacing 6.25%;
+  padding-left: 6.25%;
+  padding-right: 6.25%;
+  padding-top: $vertical-spacing;
+
+  & + .related-content {
+    margin-top: $vertical-spacing;
+  }
+
+  & + img {
+    padding-top: 0;
+  }
 
   a {
     font-family: $PxGroteskBold;
     border-bottom-width: 2px;
     border-bottom-style: solid;
+  }
+
+  h2 {
+    @extend .h3;
   }
 
   .section-title {
@@ -36,7 +50,7 @@
 
   hr {
     width: 120px;
-    margin: 30px auto;
+    margin: $title-border-bottom auto;
     height: 3px;
     border: none;
   }
@@ -68,20 +82,38 @@
   }
 
   @media screen and (min-width: $bp-medium) {
-    padding-top: $vertical-spacing-medium;
-    padding-bottom: $vertical-spacing-medium;
+    & {
+      padding-top: $vertical-spacing-medium;
 
-    &.intro {
-      padding: 168px 6.25% 100px;
+      &.intro {
+        padding: 168px 6.25% 100px;
+      }
+    }
+
+    &:first-of-type + img {
+      padding-top: 0;
+    }
+
+    & + .related-content {
+      margin-top: $vertical-spacing-medium;
     }
   }
 
   @media screen and (min-width: $bp-large) {
-    padding-top: $vertical-spacing-large;
-    padding-bottom: $vertical-spacing-large;
+    & {
+      padding-top: $vertical-spacing-large;
 
-    &.intro {
-      padding: 120px 6.25% 100px;
+      &.intro {
+        padding: 120px 6.25% 100px;
+      }
+    }
+
+    &:first-of-type + img {
+      padding-top: 0;
+    }
+
+    & + .related-content {
+      margin-top: $vertical-spacing-large;
     }
   }
 
@@ -90,5 +122,4 @@
   .image-link {
     border: none;
   }
-
 }

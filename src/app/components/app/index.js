@@ -33,19 +33,23 @@ import VideoOverlay from 'app/components/video-overlay';
 
 const pageMap = {
   'home': require('app/components/home'),
+  'about-us': require('app/components/about-us'),
   'work': require('app/components/work'),
   'work/case-study': require('app/components/case-study'),
-  'work/discovery-strategy': require('app/components/work-discovery-strategy'),
-  'work/design-build': require('app/components/work-design-build'),
-  'work/launch-scale': require('app/components/work-launch-scale'),
-  'work/ways-of-working': require('app/components/work-ways-of-working'),
+  'about-us/discovery-strategy': require('app/components/work-discovery-strategy'),
+  'about-us/design-build': require('app/components/work-design-build'),
+  'about-us/launch-scale': require('app/components/work-launch-scale'),
+  'about-us/change-transform': require('app/components/work-change-transform'),
+  'auto': require('app/components/auto'),
+  'auto/humanisingautonomy': require('app/components/auto-humanising-autonomy'),
   'blog': require('app/components/blog'),
   'blog/post': require('app/components/post'),
   'legal': require('app/components/legal'),
   'join-us': require('app/components/join-us'),
   'events': require('app/components/events'),
   'events/event': require('app/components/event'),
-  'ev': require('app/components/page')
+  'ev': require('app/components/page'),
+  'contact-us': require('app/components/contact-us')
 };
 
 const App = React.createClass({
@@ -131,6 +135,7 @@ const App = React.createClass({
             <NavigationOverlay
               pages={navMain}
               section={currentPage.split('/')[0]}
+              page={currentPage.split('/')[1]}
             />
           );
           break;

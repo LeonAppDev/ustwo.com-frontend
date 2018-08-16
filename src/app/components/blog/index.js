@@ -133,7 +133,7 @@ const PageBlog = React.createClass({
       <article className={classes}>
         <Hero
           key="hero"
-          title="Think. Share. Learn."
+          title="THINK. MAKE. LEARN."
           eventLabel="ustwo blog"
           showDownIndicator={false}
           notFullScreen={true}
@@ -146,15 +146,15 @@ const PageBlog = React.createClass({
         <section className="card-list blog-post-list">
           <div className="card-list-inner page-content-wrapper">
             {this.renderPosts()}
-            <LoadMoreButton
-              loading={isLoadingMorePosts}
-              onClick={this.onClickLoadMore}
-              disabled={postsPagination >= postsPaginationTotal}
-            />
           </div>
+          <LoadMoreButton
+            loading={isLoadingMorePosts}
+            onClick={this.onClickLoadMore}
+            disabled={postsPagination >= postsPaginationTotal}
+          />
         </section>
         <ScrollWrapper
-          component={<ContactBlock />}
+          component={<ContactBlock page={page ? page.slug : 'home'} />}
           documentScrollPosition={documentScrollPosition}
           viewportDimensions={viewportDimensions}
           requireScreenPosition={true}

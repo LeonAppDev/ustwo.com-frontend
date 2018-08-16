@@ -1,20 +1,28 @@
 import React from 'react';
 import GradientWords from '../gradient-words';
+import Flux from 'app/flux';
+
+function homeMoreMessageButton() {
+  return (e) => {
+    e.preventDefault();
+    Flux.navigate('/blog');
+  }
+}
 
 function HomeMoreMessage({ showPopup }) {
   return (
-    <h1>
+    <div className="home-message-text" onClick={homeMoreMessageButton()}>
       <span>We </span><GradientWords
-        word="ship"
+        word="disrupt"
         color="cold"
-      /><span> products, </span><GradientWords
-        word="launch"
+      /><span> industries, </span><GradientWords
+        word="define"
         color="lukewarm"
-      /><span> ventures, and </span><GradientWords
-        word="invest"
+      /><span> new frontiers, and </span><GradientWords
+        word="deliver"
         color="hot"
-      /><span> in startups</span>
-    </h1>
+      /><span> tangible results</span>
+    </div>
   );
 }
 

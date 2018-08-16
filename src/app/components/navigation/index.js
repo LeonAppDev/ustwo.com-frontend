@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { isEmpty } from 'lodash';
 import classnames from 'classnames';
 import Scroll from 'react-scroll';
 import Flux from 'app/flux';
@@ -18,8 +19,7 @@ class Navigation extends Component {
       active: false,
       navHeight: 0,
       paused: true,
-      capabilityPages: ['discovery-strategy', 'design-build', 'launch-scale', 'ways-of-working'],
-      heroPages: ['home', 'work', 'blog', 'events', 'join-us', 'ustwo-auto']
+      capabilityPages: ['discovery-strategy', 'design-build', 'launch-scale', 'change-transform']
     }
   }
 
@@ -41,23 +41,12 @@ class Navigation extends Component {
   }
 
   toggleMenu() {
-    const { viewportDimensions, documentScrollPosition, section, modal } = this.props;
+    const { modal } = this.props;
 
-    if (documentScrollPosition < viewportDimensions.height && section === 'home') {
-      Scroll.animateScroll.scrollTo(viewportDimensions.height);
-      Scroll.Events.scrollEvent.register('end', () => {
-        if (modal === 'menu') {
-          Flux.closeModal();
-        } else {
-          Flux.showNavOverlay();
-        }
-      });
+    if (modal === 'menu') {
+      Flux.closeModal();
     } else {
-      if (modal === 'menu') {
-        Flux.closeModal();
-      } else {
-        Flux.showNavOverlay();
-      }
+      Flux.showNavOverlay();
     }
   }
 
@@ -69,16 +58,21 @@ class Navigation extends Component {
       case 'post':
         navigateTo = '/blog';
         break;
-      case 'case-study':
       case 'discovery-strategy':
       case 'design-build':
       case 'launch-scale':
-      case 'ways-of-working':
-      case 'ustwo-auto':
+      case 'change-transform':
+        navigateTo = '/about-us';
+        break;
+      case 'case-study':
+      case 'auto':
         navigateTo = '/work';
         break;
       case 'event':
         navigateTo = '/events';
+        break;
+      case 'humanisingautonomy':
+        navigateTo = '/auto';
         break;
       default:
         navigateTo = '/';
@@ -90,15 +84,24 @@ class Navigation extends Component {
   renderBackButton() {
     const { page } = this.props;
     const { capabilityPages, workPages } = this.state;
-    const workSubPage = capabilityPages.includes(page) || page === 'case-study' || page === 'ustwo-auto';
-    const otherSubPage = page === 'post' || page === 'event';
-    const subPageText = capabilityPages.includes(page) || page === 'case-study' ? 'Work' : 'Back';
+    const subPage = page === 'case-study' || page === 'post' || page === 'humanisingautonomy' || capabilityPages.includes(page);
 
-    if (workSubPage || otherSubPage) {
+    let linkText;
+    if (page === 'case-study') {
+      linkText = 'Work';
+    } else if (capabilityPages.includes(page)) {
+      linkText = 'About Us'
+    } else if (page === 'humanisingautonomy') {
+      linkText = 'Auto & Mobility';
+    } else if (page === 'post') {
+      linkText = 'Blog';
+    } else {
+      linkText = 'Back';
+    }
+
+    if (subPage) {
       return (
-        <div className="navigation-subpage-nav">
-          <button onClick={this.subPageBack.bind(this)}>{workSubPage ? 'Work' : 'Back'}</button>
-        </div>
+        <button onClick={this.subPageBack.bind(this)}>{linkText}</button>
       );
     }
     return;
@@ -120,27 +123,27 @@ class Navigation extends Component {
 
   render() {
     const { section, page, customClass, documentScrollPosition, venturesPosition, testimonialsPosition, popup, modal, viewportDimensions, caseStudy } = this.props;
-    const { active, paused, navHeight, capabilityPages, heroPages } = this.state;
+    const { active, paused, navHeight, capabilityPages } = this.state;
 
-    const venturesActive = venturesPosition && documentScrollPosition > venturesPosition.from - (viewportDimensions.height * .5) && documentScrollPosition < venturesPosition.to - (viewportDimensions.height * .5);
-    const testimonialsActive = testimonialsPosition && documentScrollPosition > testimonialsPosition.from - (navHeight * 0.5) && documentScrollPosition < testimonialsPosition.to - (navHeight * 0.5);
+    const venturesActive = venturesPosition && documentScrollPosition > venturesPosition.from - (navHeight * .5) && documentScrollPosition < venturesPosition.to - (navHeight * .5);
+    const testimonialsActive = !isEmpty(testimonialsPosition) && documentScrollPosition > testimonialsPosition.from - (navHeight * 0.5) && documentScrollPosition < testimonialsPosition.to - (navHeight * 0.5);
+    const footerActive = documentScrollPosition > 4000 - (693 + 414);
     const homePage = section === 'home';
-    const heroPage = heroPages.includes(section) || caseStudy;
-    const subPage = page === 'post' || page === 'event' || capabilityPages.includes(page) || page === 'case-study' || page === 'ustwo-auto';
+    const heroPage = section === 'home' || section === 'about-us' || section === 'work' || section === 'join-us' || section === 'events' || section === 'blog' || section === 'auto' || section === 'contact-us';
+    const subPage = page === 'post' || page === 'event' || capabilityPages.includes(page) || page === 'case-study' || page === 'auto' || page === 'humanisingautonomy';
     const blogEvent = (section === 'blog' || section === 'events') && !subPage;
     const scrolled = documentScrollPosition > 0;
     const scrolledAfter100 = documentScrollPosition > viewportDimensions.height - (navHeight * 0.5);
     const caseStudyName = caseStudy ? kebabCase(caseStudy.name) : null
 
     const navClasses = classnames('navigation', customClass, section, page, caseStudyName, {
-      notSticky: modal === null && !scrolledAfter100 && homePage,
+      sticky: modal === null && scrolledAfter100 && homePage,
       pageControls: subPage,
       scrolled: scrolled,
       subPage: subPage,
-      notOverHero: scrolledAfter100 && heroPage && !subPage || scrolledAfter100 && heroPage && page === 'ustwo-auto',
-      default: capabilityPages.includes(page) || venturesActive && homePage && scrolledAfter100 && !modal,
-      testimonialsActive: testimonialsActive,
-      invert: subPage || section === 'legal',
+      overHero: !scrolledAfter100 && heroPage && !subPage || !scrolledAfter100 && heroPage,
+      default: capabilityPages.includes(page),
+      invert: venturesActive && homePage && scrolledAfter100 && !modal || testimonialsActive,
       menuOpen: modal,
       active: active && section === 'home'
     });
@@ -148,26 +151,29 @@ class Navigation extends Component {
     let color;
     switch(section) {
       case 'home':
-        color = ['#16D6D9', '#96CC29'];
+        color = ['#16D6D9', '#96CC29']; // $mare, $jeezz
         break;
       case 'work':
-        color = ['#6114CC', '#FA7D78'];
+        color = ['#6114CC', '#FA7D78']; // $rain, $softPassion
         break;
       case 'blog':
-        color = ['#009CF3', '#16D6D9'];
+        color = ['#009CF3', '#16D6D9']; // $blu, $mare
         break;
-      case 'events':
-        color = ['#ED0082', '#FA7D78'];
+      case 'about-us':
+        color = ['#ED0082', '#FA7D78']; // $piglet, $softPassion
         break;
       case 'join-us':
-        color = ['#FFBF02', '#FA7D78'];
+        color = ['#FFBF02', '#FA7D78']; // $honey, $softPassion
+        break;
+      case 'contact-us':
+        color = ['#14C04D', '#F5E664']; // $pot, $softHoney
         break;
       case 'notfound':
-        color = ['#6114CC', '#FA7D78'];
+        color = ['#6114CC', '#FA7D78']; // $rain, $softPassion
         break;
     }
 
-    if (caseStudy && caseStudy.name === 'ustwo Auto') {
+    if (caseStudy && caseStudy.name === 'ustwo Auto' || section === 'auto') {
       color = ['#f8e467', '#ffbf00'];
     }
 
@@ -178,17 +184,18 @@ class Navigation extends Component {
             <li><a href="/">Home</a></li>
             <li><a href="/work">Work</a></li>
             <li><a href="/blog">Blog</a></li>
-            <li><a href="/events">Events</a></li>
             <li><a href="/join-us">Join us</a></li>
           </ul>
         </div>
-        {this.renderBackButton()}
+        <div className="navigation-subpage-nav">
+          {this.renderBackButton()}
+        </div>
         <div className="navigation-buttons">
           <button
             className="navigation-logo"
             onClick={this.onClickLogo.bind(this)}
           >
-            <SVG title="ustwo logo" spritemapID="ustwologo" />
+            <SVG title="ustwo" spritemapID="ustwologo" />
           </button>
           <button
             className="navigation-toggle"

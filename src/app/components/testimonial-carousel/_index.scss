@@ -13,7 +13,7 @@
   color: $offWhite;
 
   &.twitterAuto {
-    background-image: linear-gradient(212deg, $ustwoAuto, $honey);
+    background-image: linear-gradient(212deg, $auto, $honey);
     color: $nonBlack;
 
     .testimonial-icon {
@@ -30,6 +30,16 @@
     .testimonial-smallprint {
       color: $nonBlack;
     }
+
+    .testimonial-company {
+      background-image: none;
+      color: black;
+      background-clip: initial;
+    }
+
+    p a {
+      text-decoration: underline;
+    }
   }
 }
 
@@ -44,7 +54,8 @@
   width: 90%;
   transform: translate(-50%, -50%);
   opacity: 0;
-  transition: opacity .2s linear;
+  visibility: hidden;
+  transition: visibility 0s linear .2s, opacity .2s linear;
 
   p {
     font-size: 20px;
@@ -53,12 +64,14 @@
 
   &.active {
     opacity: 1;
-    transition-delay: .2s;
+    visibility: visible;
+    transition-delay: 0s, .2s;
   }
 }
 
 .testimonial-name {
   font-size: 20px;
+  margin-top: 20px;
 }
 
 .testimonial-smallprint {

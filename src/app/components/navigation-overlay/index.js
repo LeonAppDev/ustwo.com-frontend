@@ -47,14 +47,16 @@ const NavigationOverlay = React.createClass({
   },
 
   renderNavigationOverlayLinks() {
-    return get(this.props, 'pages', []).map(link => {
+    // Remove reference to Events in least destructive way
+    const menuItems = get(this.props, 'pages', []).filter(item => item.slug != "events");
+
+    return menuItems.map(link => {
       const slug = tempChangeWorkName(link.slug);
       const url = slug === 'home' ? '/' : `/${slug}`;
       const mouseOver = url === '/' ? 'home' : url.slice(1);
       const classes = classnames('navigation-overlay-link', {
         selected: slug === this.props.section
       });
-
 
       return (
         <li className={classes} key={link.id}>
@@ -86,7 +88,12 @@ const NavigationOverlay = React.createClass({
   },
 
   render() {
-    const classes = classnames('navigation-overlay', this.props.section, `navigation-hover-${this.state.hoveredItem}`);
+    const classes = classnames(
+      'navigation-overlay',
+      this.props.section,
+      `navigation-overlay-${this.props.section}`,
+      `navigation-hover-${this.state.hoveredItem}`
+    );
 
     return (
       <nav className={classes} onClick={this.onClickContent}>
